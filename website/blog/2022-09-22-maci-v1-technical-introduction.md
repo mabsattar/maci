@@ -9,6 +9,16 @@ authors:
 tags: [zk, maci, release, voting, security]
 ---
 
+import React from 'react';
+import Card from '../src/components/BlogCard/Card';
+import styles from '../src/components/BlogCard/blog.module.css';
+
+<div className={styles.cardsGrid}>
+<Card
+  excerpt="MACI, which stands for Minimal Anti-Collusion Infrastructure, is an application that allows users to have an on-chain voting process with greatly increased collusion resistance. A common problem among today’s on-chain voting processes is how easy it is to bribe voters into voting for a particular option. Oftentimes this bribery takes the form of “join our pool (vote our way) and we will give you a cut of the rewards (the bribe)”. Since all transactions on the blockchain are public, without MACI, voters can easily prove to the briber which option they voted for and therefore receive the bribe rewards."
+  url="https://maci.pse.dev/blog/maci-1-0-technical-introduction"
+  content="
+
 # A Technical Introduction to MACI 1.0
 
 ## Introduction
@@ -176,3 +186,7 @@ The tallyVotes function is only successful if the verifier contract returns that
 ## Conclusion
 
 MACI is a huge step forward in preventing collusion for on-chain votes. While it doesn’t prevent all possibilities of collusion, it does make it much harder. MACI can already be seen to be in use by the clr.fund, which has users vote on which projects to receive funding. When the possible funding amount becomes very large, users and organizations have a large incentive to collude to receive parts of these funds. This is where MACI can truly make a difference, to protect the fairness of such important voting processes such as those at clr.fund.
+"
+/>
+
+</div>

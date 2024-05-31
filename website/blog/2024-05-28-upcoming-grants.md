@@ -10,6 +10,16 @@ authors:
 tags: [voting, security, anonymity, roadmap, grants]
 ---
 
+import React from 'react';
+import Card from '../src/components/BlogCard/Card';
+import styles from '../src/components/BlogCard/blog.module.css';
+
+<div className={styles.cardsGrid}>
+<Card
+  excerpt="Minimal Anti Collusion Infrastructure ([MACI](https://github.com/privacy-scaling-explorations/maci)) is a public good that allows one to run secure, private, on-chain voting polls.
+  "
+  url="https://maci.pse.dev/blog/upcoming-grants-2024"
+  content="
 Minimal Anti Collusion Infrastructure ([MACI](https://github.com/privacy-scaling-explorations/maci)) is a public good that allows one to run secure, private, on-chain voting polls.
 
 Given MACI's open source nature, it's common for our core team to develop new features or to fix issues based on community feedback. However, it's been less common for external contributors to make significant changes to the core protocol.
@@ -82,3 +92,6 @@ If you have an ambitious idea you'd like to work on, reach out to us and we coul
 - [Marija Mikić - Anonymity in MACI - EthCC [6]](https://www.youtube.com/live/X54LaXfJTn4)
 - [MACI Original idea](https://ethresear.ch/t/minimal-anti-collusion-infrastructure/5413)
 - [MACI Anonymization](https://ethresear.ch/t/maci-anonymization-using-rerandomizable-encryption/7054)
+"
+/>
+</div>
