@@ -8,17 +8,9 @@ authors:
   url: https://github.com/Vee-18
   image_url: /img/pse-logo-round.png
 tags: [maci, voting, history, vitalik]
+excerpt: "Minimal Anti-Collusion Infrastructure (MACI), is making waves in the world of private, digital voting. But where did this technology originate? Vitalik Buterin is the mind that thought of MACI. In this post, we’ll dive into his vision for a more secure and private digital voting system."
 ---
 
-import React from 'react';
-import Card from '../src/components/BlogCard/Card';
-import styles from '../src/components/BlogCard/blog.module.css';
-
-<div className={styles.cardsGrid}>
-<Card
-  excerpt="Minimal Anti-Collusion Infrastructure (MACI), is making waves in the world of private, digital voting. But where did this technology originate? Vitalik Buterin is the mind that thought of MACI. In this post, we’ll dive into his vision for a more secure and private digital voting system."
-  url="https://maci.pse.dev/blog/maci-origins"
-  content="
 Minimal Anti-Collusion Infrastructure (MACI), is making waves in the world of private, digital voting. But where did this technology originate? Vitalik Buterin is the mind that thought of MACI. In this post, we’ll dive into his vision for a more secure and private digital voting system.
 
 ## Who is Vitalik Buterin?
@@ -44,7 +36,3 @@ Through MACI, Vitalik sought to revolutionise the democratic process. Imagine a 
 ## Final Thoughts
 
 Vitalik’s vision for MACI was not just a technological advancement, but a stride towards a more just and democratic society. Through blockchain technology, he has shown how innovation can be harnessed for the greater good, by protecting the sanctity of each vote. MACI is a testament to how technology can be a powerful tool in upholding democratic values and ensuring that every voice is heard. If you’re keen on learning more, dig in to our documentation [**here**](https://maci.pse.dev/docs/introduction). Also, join us in building our future, connect with our team on [Discord](https://discord.com/invite/sF5CT5rzrR)!
-"
-/>
-
-</div>

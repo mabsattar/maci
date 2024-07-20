@@ -30,5 +30,5 @@
     "sourceMap": true,
     "stripInternal": true
   },
-  "include": ["./src", "./docusaurus.config.ts"]
+  "include": ["./src", "./docusaurus.config.ts", "plugins/blog-plugin"]
 }
