@@ -1,7 +1,7 @@
 import React from "react";
 import Layout from "@theme/Layout";
 import useDocusaurusContext from "@docusaurus/useDocusaurusContext";
-import styles from "../../css/card.module.css";
+import styles from "../css/card.module.css";
 
 interface BlogPost {
   title: string;
@@ -31,7 +31,7 @@ const BlogPage: React.FC = () => {
       <div className={styles.blogContainer}>
         <div className={styles.blogList}>
           {blogPosts.map((post: BlogPost) => (
-            <a key={post.slug} href={`/blog/${post.slug}`} className={styles.blogCard}>
+            <a key={post.slug} className={styles.blogCard} href={`/blog/${post.slug}`}>
               <h2 className={styles.blogTitle}>{post.title}</h2>
               <p className={styles.blogDescription}>{post.description}</p>
               <p className={styles.blogDate}>{post.date}</p>
