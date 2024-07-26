@@ -53,14 +53,6 @@ async function getConfig(): Promise<Config> {
           },
           blog: {
             showReadingTime: true,
-            path: "src/pages/blog/index",
-            routeBasePath: "/blog",
-            include: ["**/*.md", "**/*.mdx"],
-            blogTitle: "Blog",
-            blogDescription: "Minimal Anti-Collusion Infrastructure.",
-            postsPerPage: "ALL",
-            blogSidebarCount: "ALL",
-            blogSidebarTitle: "All our posts",
 
             editUrl: ({ blogDirPath, blogPath }) => `${GITHUB_URL}/edit/dev/website/${blogDirPath}/${blogPath}`,
           },
@@ -113,9 +105,8 @@ async function getConfig(): Promise<Config> {
             position: "left",
           },
           {
-            to: "/blog",
+            to: "/blogs",
             label: "Blog",
-            position: "left",
           },
           {
             to: "/roadmap",
