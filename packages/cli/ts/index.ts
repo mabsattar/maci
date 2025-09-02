@@ -1007,6 +1007,7 @@ program
   .description("generate the proofs for a poll")
   .option("-k, --private-key <privateKey>", "your serialized MACI private key")
   .option("-x, --maci-address <maciAddress>", "the MACI contract address")
+  .option("--incremental", "allow regeneration of missing proofs(use with caution)", false)
   .requiredOption("-o, --poll-id <pollId>", "the poll id", BigInt)
   .requiredOption(
     "-t, --tally-file <tallyFile>",
