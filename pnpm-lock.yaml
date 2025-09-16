@@ -168,8 +168,8 @@ importers:
         specifier: ^4.1.0
         version: 4.1.0
       dotenv:
-        specifier: ^17.2.0
-        version: 17.2.0
+        specifier: ^17.2.2
+        version: 17.2.2
       ethers:
         specifier: ^6.15.0
         version: 6.15.0
@@ -304,8 +304,8 @@ importers:
         specifier: ^4.1.0
         version: 4.1.0
       dotenv:
-        specifier: ^17.2.0
-        version: 17.2.0
+        specifier: ^17.2.2
+        version: 17.2.2
       ethers:
         specifier: ^6.15.0
         version: 6.15.0
@@ -569,8 +569,8 @@ importers:
         specifier: ^14.0.0
         version: 14.0.0
       dotenv:
-        specifier: ^17.2.0
-        version: 17.2.0
+        specifier: ^17.2.2
+        version: 17.2.2
       ethers:
         specifier: ^6.15.0
         version: 6.15.0
@@ -721,8 +721,8 @@ importers:
         specifier: ^8.0.1
         version: 8.0.1(chai@4.5.0)
       dotenv:
-        specifier: ^17.2.0
-        version: 17.2.0
+        specifier: ^17.2.2
+        version: 17.2.2
       hardhat-artifactor:
         specifier: ^0.2.0
         version: 0.2.0(hardhat@2.25.0(ts-node@10.9.2(@types/node@24.2.0)(typescript@5.9.2))(typescript@5.9.2))
@@ -8423,8 +8423,8 @@ packages:
     resolution: {integrity: sha512-47qPchRCykZC03FhkYAhrvwU4xDBFIj1QPqaarj6mdM/hgUzfPHcpkHJOn3mJAufFeeAxAzeGsr5X0M4k6fLZQ==}
     engines: {node: '>=12'}
 
-  dotenv@17.2.0:
-    resolution: {integrity: sha512-Q4sgBT60gzd0BB0lSyYD3xM4YxrXA9y4uBDof1JNYGzOXrQdQ6yX+7XIAqoFOGQFOTK1D3Hts5OllpxMDZFONQ==}
+  dotenv@17.2.2:
+    resolution: {integrity: sha512-Sf2LSQP+bOlhKWWyhFsn0UsfdK/kCWRv1iuA2gXAwt3dyNabr6QSj00I2V10pidqz69soatm9ZwZvpQMTIOd5Q==}
     engines: {node: '>=12'}
 
   dunder-proto@1.0.1:
@@ -27558,7 +27558,7 @@ snapshots:
 
   dotenv@16.4.7: {}
 
-  dotenv@17.2.0: {}
+  dotenv@17.2.2: {}
 
   dunder-proto@1.0.1:
     dependencies:
