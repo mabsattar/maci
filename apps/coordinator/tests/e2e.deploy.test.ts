@@ -40,7 +40,7 @@ dotenv.config();
 
 jest.setTimeout(700000); // Sets timeout to 700 seconds
 
-const PORT = process.env.COORDINATOR_PORT || 3000;
+const PORT = process.env.COORDINATOR_PORT || 3001;
 const TEST_URL = `http://localhost:${PORT}/v1`;
 const CHAIN = ESupportedChains.Localhost;
 
