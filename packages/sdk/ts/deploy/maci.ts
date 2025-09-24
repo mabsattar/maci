@@ -6,11 +6,13 @@ import {
   MACI__factory as MACIFactory,
   MessageProcessorFactory__factory as MessageProcessorFactoryFactory,
   IBasePolicy__factory as SignUpPolicyFactory,
+  deployVerifier,
 } from "@maci-protocol/contracts";
 
 import type { IDeployMaciArgs, IMaciContracts } from "./types";
 
 import { deployFactoryWithLinkedLibraries } from "./utils";
+import { deployVerifyingKeysRegistryContract } from "./verifyingKeysRegistry";
 
 /**
  * Deploy the MACI contracts
@@ -25,6 +27,7 @@ export const deployMaci = async ({
   tallyFactoryAddress,
   signer,
   poseidonAddresses,
+  verifier,
 }: IDeployMaciArgs): Promise<IMaciContracts> => {
   const emptyBallotRoots = generateEmptyBallotRoots(stateTreeDepth);
 
@@ -79,6 +82,11 @@ export const deployMaci = async ({
     signer,
   });
 
+  const verifierContract = verifier || (await deployVerifier(signer, true));
+  const verifierContractAddress = await verifierContract.getAddress();
+
+  const verifyingKeysRegistryContractAddress = await deployVerifyingKeysRegistryContract({ signer });
+
   const maciContractAddress = await deployFactoryWithLinkedLibraries({
     abi: MACIFactory.abi,
     bytecode: MACIFactory.linkBytecode({
@@ -89,12 +97,16 @@ export const deployMaci = async ({
     }),
     signer,
     args: [
-      pollFactoryContractAddress,
-      messageProcessorFactoryContractAddress,
-      tallyFactoryContractAddress,
-      signupPolicyAddress,
-      stateTreeDepth,
-      emptyBallotRoots,
+      {
+        pollFactory: pollFactoryContractAddress,
+        messageProcessorFactory: messageProcessorFactoryContractAddress,
+        tallyFactory: tallyFactoryContractAddress,
+        signUpPolicy: signupPolicyAddress,
+        verifier: verifierContractAddress,
+        verifyingKeysRegistry: verifyingKeysRegistryContractAddress,
+        stateTreeDepth,
+        emptyBallotRoots,
+      },
     ],
   });
 
@@ -107,5 +119,7 @@ export const deployMaci = async ({
     messageProcessorFactoryContractAddress,
     tallyFactoryContractAddress,
     poseidonAddresses: poseidonAddrs,
+    verifierContractAddress,
+    verifyingKeysRegistryContractAddress,
   };
 };

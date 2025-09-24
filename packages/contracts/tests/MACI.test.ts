@@ -6,13 +6,7 @@ import { expect } from "chai";
 import { AbiCoder, type BigNumberish, type Signer, ZeroAddress } from "ethers";
 
 import { getDefaultSigner, getSigners, getBlockTimestamp } from "../ts/utils";
-import {
-  type MACI,
-  type Verifier,
-  type VerifyingKeysRegistry,
-  type IBasePolicy,
-  type ConstantInitialVoiceCreditProxy,
-} from "../typechain-types";
+import { type MACI, type IBasePolicy, type ConstantInitialVoiceCreditProxy } from "../typechain-types";
 
 import {
   STATE_TREE_DEPTH,
@@ -28,8 +22,6 @@ describe("MACI", function test() {
   this.timeout(900000); // 15 minutes
 
   let maciContract: MACI;
-  let verifyingKeysRegistryContract: VerifyingKeysRegistry;
-  let verifierContract: Verifier;
   let signuPolicyContract: IBasePolicy;
   let initialVoiceCreditProxy: ConstantInitialVoiceCreditProxy;
   let pollId: bigint;
@@ -51,8 +43,6 @@ describe("MACI", function test() {
       });
 
       maciContract = r.maciContract;
-      verifyingKeysRegistryContract = r.verifyingKeysRegistryContract;
-      verifierContract = r.mockVerifierContract as Verifier;
       signuPolicyContract = r.policyContract;
       initialVoiceCreditProxy = r.constantInitialVoiceCreditProxyContract;
 
@@ -218,8 +208,6 @@ describe("MACI", function test() {
         treeDepths,
         messageBatchSize,
         coordinatorPublicKey: coordinator.publicKey.asContractParam() as { x: BigNumberish; y: BigNumberish },
-        verifier: verifierContract,
-        verifyingKeysRegistry: verifyingKeysRegistryContract,
         mode: EMode.QV,
         policy: signuPolicyContract,
         initialVoiceCreditProxy,
@@ -261,8 +249,6 @@ describe("MACI", function test() {
         treeDepths,
         messageBatchSize,
         coordinatorPublicKey: coordinator.publicKey.asContractParam() as { x: BigNumberish; y: BigNumberish },
-        verifier: verifierContract,
-        verifyingKeysRegistry: verifyingKeysRegistryContract,
         mode: EMode.QV,
         policy: signuPolicyContract,
         initialVoiceCreditProxy,
@@ -282,8 +268,6 @@ describe("MACI", function test() {
         treeDepths,
         messageBatchSize,
         coordinatorPublicKey: users[0].publicKey.asContractParam() as { x: BigNumberish; y: BigNumberish },
-        verifier: verifierContract,
-        verifyingKeysRegistry: verifyingKeysRegistryContract,
         mode: EMode.QV,
         policy: signuPolicyContract,
         initialVoiceCreditProxy,

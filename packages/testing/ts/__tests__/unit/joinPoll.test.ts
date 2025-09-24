@@ -7,11 +7,9 @@ import {
   setVerifyingKeys,
   signup,
   deployPoll,
-  deployVerifyingKeysRegistryContract,
   type IMaciContracts,
   deployFreeForAllSignUpPolicy,
   deployConstantInitialVoiceCreditProxy,
-  deployVerifier,
   deployMaci,
   generateMaciStateTreeWithEndKey,
   deployConstantInitialVoiceCreditProxyFactory,
@@ -41,7 +39,6 @@ describe("joinPoll", function test() {
   let signer: Signer;
   let maciAddresses: IMaciContracts;
   let initialVoiceCreditProxyContractAddress: string;
-  let verifierContractAddress: string;
 
   const users = new Array(3).fill(undefined).map(() => new Keypair());
 
@@ -74,20 +71,20 @@ describe("joinPoll", function test() {
     );
     initialVoiceCreditProxyContractAddress = await initialVoiceCreditProxy.getAddress();
 
-    const verifier = await deployVerifier(signer, true);
-    verifierContractAddress = await verifier.getAddress();
-
     const startDate = await getBlockTimestamp(signer);
 
-    // we deploy the verifying keys registry contract
-    const verifyingKeysRegistryAddress = await deployVerifyingKeysRegistryContract({ signer });
-    // we set the verifying keys
-    await setVerifyingKeys({ ...(await verifyingKeysArgs(signer)), verifyingKeysRegistryAddress });
     // deploy the smart contracts
     maciAddresses = await deployMaci({
       ...deployArgs,
       signer,
       signupPolicyAddress: signupPolicyContractAddress,
+    });
+
+    // we set the verifying keys
+    const { verifyingKeysRegistryContractAddress } = maciAddresses;
+    await setVerifyingKeys({
+      ...(await verifyingKeysArgs(signer)),
+      verifyingKeysRegistryAddress: verifyingKeysRegistryContractAddress,
     });
 
     // signup the user
@@ -120,8 +117,6 @@ describe("joinPoll", function test() {
       pollEndTimestamp: startDate + pollDuration,
       relayers: [await signer.getAddress()],
       maciAddress: maciAddresses.maciContractAddress,
-      verifierContractAddress,
-      verifyingKeysRegistryContractAddress: verifyingKeysRegistryAddress,
       policyContractAddress: pollPolicyContractAddress,
       initialVoiceCreditProxyContractAddress,
     });

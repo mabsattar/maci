@@ -59,9 +59,36 @@ contract MACI is IMACI, DomainObjs, Params, Hasher {
   /// user may sign up to vote
   IBasePolicy public immutable signUpPolicy;
 
+  /// @notice The verifier contract for zk-SNARK proofs
+  /// This is send to the poll when deploying
+  IVerifier public immutable verifier;
+
+  /// @notice The verifying keys registry contract
+  /// This is send to the poll when deploying
+  IVerifyingKeysRegistry public immutable verifyingKeysRegistry;
+
   /// @notice The array of the state tree roots for each sign up
   /// For the N'th sign up, the state tree root will be stored at the index N
   uint256[] public stateRootsOnSignUp;
+
+  struct InitParams {
+    // The PollFactory contract
+    IPollFactory pollFactory;
+    // The MessageProcessorFactory contract
+    IMessageProcessorFactory messageProcessorFactory;
+    // The TallyFactory contract
+    ITallyFactory tallyFactory;
+    // MACI signup policy contract
+    IBasePolicy signUpPolicy;
+    // Verifier contract for zk-SNARK proofs
+    IVerifier verifier;
+    // Verifying keys registry contract for zk-SNARK proofs
+    IVerifyingKeysRegistry verifyingKeysRegistry;
+    // Depth of the state tree
+    uint8 stateTreeDepth;
+    // Roots of the empty ballot trees
+    uint256[5] emptyBallotRoots;
+  }
 
   // Events
   event SignUp(
@@ -85,31 +112,21 @@ contract MACI is IMACI, DomainObjs, Params, Hasher {
   error UserNotSignedUp();
 
   /// @notice Create a new instance of the MACI contract.
-  /// @param _pollFactory The PollFactory contract
-  /// @param _messageProcessorFactory The MessageProcessorFactory contract
-  /// @param _tallyFactory The TallyFactory contract
-  /// @param _signUpPolicy The signup policy contract
-  /// @param _stateTreeDepth The depth of the state tree
-  /// @param _emptyBallotRoots The roots of the empty ballot trees
-  constructor(
-    IPollFactory _pollFactory,
-    IMessageProcessorFactory _messageProcessorFactory,
-    ITallyFactory _tallyFactory,
-    IBasePolicy _signUpPolicy,
-    uint8 _stateTreeDepth,
-    uint256[5] memory _emptyBallotRoots
-  ) payable {
+  /// @param initParams The initialization parameters defined above
+  constructor(InitParams memory initParams) payable {
     // initialize and insert the blank leaf
     InternalLeanIMT._insert(leanIMTData, PAD_KEY_HASH);
     stateRootsOnSignUp.push(PAD_KEY_HASH);
 
-    pollFactory = _pollFactory;
-    messageProcessorFactory = _messageProcessorFactory;
-    tallyFactory = _tallyFactory;
-    signUpPolicy = _signUpPolicy;
-    stateTreeDepth = _stateTreeDepth;
-    maxSignups = uint256(STATE_TREE_ARITY) ** uint256(_stateTreeDepth);
-    emptyBallotRoots = _emptyBallotRoots;
+    pollFactory = initParams.pollFactory;
+    messageProcessorFactory = initParams.messageProcessorFactory;
+    tallyFactory = initParams.tallyFactory;
+    signUpPolicy = initParams.signUpPolicy;
+    verifier = initParams.verifier;
+    verifyingKeysRegistry = initParams.verifyingKeysRegistry;
+    stateTreeDepth = initParams.stateTreeDepth;
+    maxSignups = uint256(STATE_TREE_ARITY) ** uint256(initParams.stateTreeDepth);
+    emptyBallotRoots = initParams.emptyBallotRoots;
 
     // Verify linked poseidon libraries
     if (hash2([uint256(1), uint256(1)]) == 0) revert PoseidonHashLibrariesNotLinked();
@@ -157,8 +174,8 @@ contract MACI is IMACI, DomainObjs, Params, Hasher {
 
     ExtContracts memory extContracts = ExtContracts({
       maci: IMACI(address(this)),
-      verifier: IVerifier(args.verifier),
-      verifyingKeysRegistry: IVerifyingKeysRegistry(args.verifyingKeysRegistry),
+      verifier: verifier,
+      verifyingKeysRegistry: verifyingKeysRegistry,
       policy: IBasePolicy(args.policy),
       initialVoiceCreditProxy: IInitialVoiceCreditProxy(args.initialVoiceCreditProxy)
     });
@@ -178,12 +195,18 @@ contract MACI is IMACI, DomainObjs, Params, Hasher {
 
     address poll = pollFactory.deploy(deployPollArgs);
     address messageProcessor = messageProcessorFactory.deploy(
-      args.verifier,
-      args.verifyingKeysRegistry,
+      address(verifier),
+      address(verifyingKeysRegistry),
       poll,
       args.mode
     );
-    address tally = tallyFactory.deploy(args.verifier, args.verifyingKeysRegistry, poll, messageProcessor, args.mode);
+    address tally = tallyFactory.deploy(
+      address(verifier),
+      address(verifyingKeysRegistry),
+      poll,
+      messageProcessor,
+      args.mode
+    );
 
     // store the addresses in a struct so they can be returned
     PollContracts memory pollAddresses = PollContracts({

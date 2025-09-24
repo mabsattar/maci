@@ -25,10 +25,6 @@ interface IMACI {
     uint8 messageBatchSize;
     /// @param coordinatorPublicKey The coordinator's public key
     DomainObjs.PublicKey coordinatorPublicKey;
-    /// @param verifier The Verifier Contract
-    address verifier;
-    /// @param verifyingKeysRegistry The VerifyingKeysRegistry Contract
-    address verifyingKeysRegistry;
     /// @param mode Voting mode
     DomainObjs.Mode mode;
     /// @param policy The policy contract

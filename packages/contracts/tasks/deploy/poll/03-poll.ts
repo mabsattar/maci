@@ -23,15 +23,10 @@ deployment.deployTask(EDeploySteps.Poll, "Deploy poll").then((task) =>
     deployment.setHre(hre);
 
     const maciContractAddress = storage.getAddress(EContracts.MACI, hre.network.name);
-    const verifierContractAddress = storage.getAddress(EContracts.Verifier, hre.network.name);
     const verifyingKeysRegistryContractAddress = storage.getAddress(EContracts.VerifyingKeysRegistry, hre.network.name);
 
     if (!maciContractAddress) {
       throw new Error("Need to deploy MACI contract first");
-    }
-
-    if (!verifierContractAddress) {
-      throw new Error("Need to deploy Verifier contract first");
     }
 
     if (!verifyingKeysRegistryContractAddress) {
@@ -151,8 +146,6 @@ deployment.deployTask(EDeploySteps.Poll, "Deploy poll").then((task) =>
         },
         messageBatchSize,
         coordinatorPublicKey: unserializedKey.asContractParam(),
-        verifier: verifierContractAddress,
-        verifyingKeysRegistry: verifyingKeysRegistryContractAddress,
         mode,
         policy: policyContractAddress,
         initialVoiceCreditProxy: initialVoiceCreditProxyContractAddress,
