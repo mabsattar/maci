@@ -31,8 +31,6 @@ export const deployPoll = async ({
   messageBatchSize,
   stateTreeDepth,
   coordinatorPublicKey,
-  verifierContractAddress,
-  verifyingKeysRegistryContractAddress,
   mode,
   policyContractAddress,
   initialVoiceCreditProxyContractAddress,
@@ -44,10 +42,6 @@ export const deployPoll = async ({
   initialVoiceCreditProxyFactoryAddress,
   signer,
 }: IDeployPollArgs): Promise<IPollContractsData> => {
-  if (!verifyingKeysRegistryContractAddress) {
-    throw new Error("Please provide a VerifyingKeysRegistry contract address");
-  }
-
   if (!maciAddress) {
     throw new Error("Please provide a MACI contract address");
   }
@@ -139,8 +133,6 @@ export const deployPoll = async ({
       },
       messageBatchSize,
       coordinatorPublicKey: coordinatorPublicKey.asContractParam(),
-      verifier: verifierContractAddress,
-      verifyingKeysRegistry: verifyingKeysRegistryContractAddress,
       mode,
       policy: signupPolicyContractAddress,
       initialVoiceCreditProxy: initialVoiceCreditProxyAddress,

@@ -22,13 +22,11 @@ import {
   publish,
   deployPoll,
   generateProofs,
-  deployVerifyingKeysRegistryContract,
   timeTravel,
   deployMaci,
   type IMaciContracts,
   deployFreeForAllSignUpPolicy,
   deployConstantInitialVoiceCreditProxy,
-  deployVerifier,
   deployConstantInitialVoiceCreditProxyFactory,
 } from "@maci-protocol/sdk";
 import chai from "chai";
@@ -76,41 +74,11 @@ describe("Integration tests", function test() {
   let signer: Signer;
   const coordinatorKeypair = new Keypair();
 
-  let verifyingKeysRegistryAddress: string;
-
   const root = path.resolve(__dirname, "../../../..");
 
   // the code that we run before all tests
   before(async () => {
     signer = await getDefaultSigner();
-    // 1. deploy verifying key Registry
-    verifyingKeysRegistryAddress = await deployVerifyingKeysRegistryContract({ signer });
-    // 2. set verifying keys
-    const { pollJoiningVerifyingKey, pollJoinedVerifyingKey, processVerifyingKey, tallyVerifyingKey } =
-      await extractAllVerifyingKeys({
-        pollJoiningZkeyPath: path.resolve(root, "./zkeys/PollJoining_10_test/PollJoining_10_test.0.zkey"),
-        pollJoinedZkeyPath: path.resolve(root, "./zkeys/PollJoined_10_test/PollJoined_10_test.0.zkey"),
-        messageProcessorZkeyPath: path.resolve(
-          root,
-          "./zkeys/MessageProcessorQv_10-20-2_test/MessageProcessorQv_10-20-2_test.0.zkey",
-        ),
-        voteTallyZkeyPath: path.resolve(root, "./zkeys/VoteTallyQv_10-1-2_test/VoteTallyQv_10-1-2_test.0.zkey"),
-      });
-
-    await setVerifyingKeys({
-      stateTreeDepth: STATE_TREE_DEPTH,
-      pollStateTreeDepth: POLL_STATE_TREE_DEPTH,
-      tallyProcessingStateTreeDepth: TALLY_PROCESSING_STATE_TREE_DEPTH,
-      voteOptionTreeDepth: VOTE_OPTION_TREE_DEPTH,
-      messageBatchSize: MESSAGE_BATCH_SIZE,
-      modes: [EMode.QV],
-      pollJoiningVerifyingKey: pollJoiningVerifyingKey!,
-      pollJoinedVerifyingKey: pollJoinedVerifyingKey!,
-      processMessagesVerifyingKeys: [processVerifyingKey!],
-      tallyVotesVerifyingKeys: [tallyVerifyingKey!],
-      verifyingKeysRegistryAddress,
-      signer,
-    });
   });
 
   // the code that we run before each test
@@ -135,10 +103,38 @@ describe("Integration tests", function test() {
     // create a new maci state
     maciState = new MaciState(STATE_TREE_DEPTH);
 
-    // 3. deploy maci
+    // 1. deploy maci
     contracts = await deployMaci({
       stateTreeDepth: STATE_TREE_DEPTH,
       signupPolicyAddress,
+      signer,
+    });
+
+    // 2. get verifying keys from local
+    const { pollJoiningVerifyingKey, pollJoinedVerifyingKey, processVerifyingKey, tallyVerifyingKey } =
+      await extractAllVerifyingKeys({
+        pollJoiningZkeyPath: path.resolve(root, "./zkeys/PollJoining_10_test/PollJoining_10_test.0.zkey"),
+        pollJoinedZkeyPath: path.resolve(root, "./zkeys/PollJoined_10_test/PollJoined_10_test.0.zkey"),
+        messageProcessorZkeyPath: path.resolve(
+          root,
+          "./zkeys/MessageProcessorQv_10-20-2_test/MessageProcessorQv_10-20-2_test.0.zkey",
+        ),
+        voteTallyZkeyPath: path.resolve(root, "./zkeys/VoteTallyQv_10-1-2_test/VoteTallyQv_10-1-2_test.0.zkey"),
+      });
+
+    // 3. set verifying keys to the registry
+    await setVerifyingKeys({
+      stateTreeDepth: STATE_TREE_DEPTH,
+      pollStateTreeDepth: POLL_STATE_TREE_DEPTH,
+      tallyProcessingStateTreeDepth: TALLY_PROCESSING_STATE_TREE_DEPTH,
+      voteOptionTreeDepth: VOTE_OPTION_TREE_DEPTH,
+      messageBatchSize: MESSAGE_BATCH_SIZE,
+      modes: [EMode.QV],
+      pollJoiningVerifyingKey: pollJoiningVerifyingKey!,
+      pollJoinedVerifyingKey: pollJoinedVerifyingKey!,
+      processMessagesVerifyingKeys: [processVerifyingKey!],
+      tallyVotesVerifyingKeys: [tallyVerifyingKey!],
+      verifyingKeysRegistryAddress: contracts.verifyingKeysRegistryContractAddress,
       signer,
     });
 
@@ -149,8 +145,6 @@ describe("Integration tests", function test() {
       signer,
     );
     const initialVoiceCreditProxyContractAddress = await initialVoiceCreditProxy.getAddress();
-    const verifier = await deployVerifier(signer, true);
-    const verifierContractAddress = await verifier.getAddress();
 
     const startDate = await getBlockTimestamp(signer);
 
@@ -167,8 +161,6 @@ describe("Integration tests", function test() {
       signer,
       mode: EMode.QV,
       initialVoiceCreditProxyContractAddress,
-      verifierContractAddress,
-      verifyingKeysRegistryContractAddress: verifyingKeysRegistryAddress,
       policyContractAddress: pollPolicyAddress,
       initialVoiceCredits: DEFAULT_INITIAL_VOICE_CREDITS,
       voteOptions: DEFAULT_VOTE_OPTIONS,

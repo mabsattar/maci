@@ -14,7 +14,6 @@ import {
   Poll__factory as PollFactory,
   type MACI,
   type Poll as PollContract,
-  type Verifier,
   type VerifyingKeysRegistry,
   type IBasePolicy,
   type ConstantInitialVoiceCreditProxy,
@@ -40,7 +39,6 @@ describe("Poll", function test() {
   let maciContract: MACI;
   let pollId: bigint;
   let pollContract: PollContract;
-  let verifierContract: Verifier;
   let verifyingKeysRegistryContract: VerifyingKeysRegistry;
   let signupPolicyContract: IBasePolicy;
   let pollPolicyContract: IBasePolicy;
@@ -67,7 +65,6 @@ describe("Poll", function test() {
         signer,
       });
       maciContract = r.maciContract;
-      verifierContract = r.mockVerifierContract as Verifier;
       verifyingKeysRegistryContract = r.verifyingKeysRegistryContract;
       signupPolicyContract = r.policyContract;
       initialVoiceCreditProxyContract = r.constantInitialVoiceCreditProxyContract;
@@ -95,8 +92,6 @@ describe("Poll", function test() {
           treeDepths,
           messageBatchSize,
           coordinatorPublicKey: coordinator.publicKey.asContractParam(),
-          verifier: verifierContract,
-          verifyingKeysRegistry: verifyingKeysRegistryContract,
           mode: EMode.QV,
           policy: pollPolicyContract,
           initialVoiceCreditProxy: initialVoiceCreditProxyContract,
@@ -206,8 +201,6 @@ describe("Poll", function test() {
             x: "100",
             y: "1",
           },
-          verifier: r.mockVerifierContract as Verifier,
-          verifyingKeysRegistry: r.verifyingKeysRegistryContract,
           mode: EMode.QV,
           policy: pollPolicyContract,
           initialVoiceCreditProxy: initialVoiceCreditProxyContract,
@@ -300,8 +293,6 @@ describe("Poll", function test() {
           treeDepths: { ...treeDepths, stateTreeDepth: stateTreeDepthTest },
           messageBatchSize,
           coordinatorPublicKey: coordinator.publicKey.asContractParam(),
-          verifier: verifierContract,
-          verifyingKeysRegistry: verifyingKeysRegistryContract,
           mode: EMode.QV,
           policy: policyContract,
           initialVoiceCreditProxy: initialVoiceCreditProxyContract,

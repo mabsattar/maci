@@ -3,10 +3,12 @@ import {
   ContractStorage,
   EPolicies,
   VerifyingKeysRegistry__factory as VerifyingKeysRegistryFactory,
+  Verifier__factory as VerifierFactory,
   MessageProcessor__factory as MessageProcessorFactory,
   Tally__factory as TallyFactory,
   Poll__factory as PollFactory,
   MACI__factory as MACIFactory,
+  IDeployPollArgs as IDeployPollArgsSDK,
   EContracts,
   EInitialVoiceCreditProxies,
   EMode,
@@ -27,13 +29,11 @@ import {
   BasePolicy,
   deployMaci,
   setVerifyingKeys,
-  deployVerifyingKeysRegistryContract,
   ConstantInitialVoiceCreditProxy,
   generateEmptyBallotRoots,
   getDeployedPolicyProxyFactories,
   AnonAadhaarCheckerFactory,
   AnonAadhaarPolicyFactory,
-  deployVerifier,
   EASCheckerFactory,
   EASPolicyFactory,
   ECheckerFactories,
@@ -597,18 +597,6 @@ export class DeployerService {
     const policyContract = await this.deployAndSavePolicy(signer, chain, config.policy);
     const policyAddress = await policyContract.getAddress();
 
-    const verifierContract = await deployVerifier(signer, true);
-
-    const verifyingKeysRegistryAddress = await deployVerifyingKeysRegistryContract({ signer });
-
-    const verifyingKeysArgs = await this.getVerifyingKeysArgs(
-      signer,
-      verifyingKeysRegistryAddress as Hex,
-      config.VerifyingKeysRegistry.args,
-      config.MACI.modes,
-    );
-    await setVerifyingKeys(verifyingKeysArgs);
-
     // deploy the smart contracts
     const maciAddresses = await deployMaci({
       stateTreeDepth: config.MACI.stateTreeDepth,
@@ -617,16 +605,28 @@ export class DeployerService {
       poseidonAddresses: config.Poseidon,
     });
 
+    // set verifying keys
+    const { verifyingKeysRegistryContractAddress, verifierContractAddress } = maciAddresses;
+
+    const verifyingKeysArgs = await this.getVerifyingKeysArgs(
+      signer,
+      verifyingKeysRegistryContractAddress as Hex,
+      config.VerifyingKeysRegistry.args,
+      config.MACI.modes,
+    );
+
+    await setVerifyingKeys(verifyingKeysArgs);
+
     // store the contracts
     await Promise.all([
       this.storage.register({
         id: EContracts.Verifier,
-        contract: verifierContract,
+        contract: new BaseContract(verifierContractAddress, VerifierFactory.abi),
         network: chain,
       }),
       this.storage.register({
         id: EContracts.VerifyingKeysRegistry,
-        contract: new BaseContract(verifyingKeysRegistryAddress, VerifyingKeysRegistryFactory.abi),
+        contract: new BaseContract(verifyingKeysRegistryContractAddress, VerifyingKeysRegistryFactory.abi),
         network: chain,
       }),
       this.storage.register({
@@ -704,7 +704,7 @@ export class DeployerService {
     // instantiate the coordinator MACI keypair
     const coordinatorKeypair = getCoordinatorKeypair();
 
-    const deployPollArgs = {
+    const deployPollArgs: IDeployPollArgsSDK = {
       maciAddress,
       pollStartTimestamp: config.startDate,
       pollEndTimestamp: config.endDate,
@@ -713,8 +713,6 @@ export class DeployerService {
       messageBatchSize: config.messageBatchSize,
       stateTreeDepth: config.pollStateTreeDepth,
       coordinatorPublicKey: coordinatorKeypair.publicKey,
-      verifierContractAddress: verifierAddress,
-      verifyingKeysRegistryContractAddress: verifyingKeysRegistryAddress,
       mode: config.mode,
       policyContractAddress: policyAddress,
       initialVoiceCreditProxyContractAddress: initialVoiceCreditProxyAddress,

@@ -19,7 +19,6 @@ import {
   type MACI,
   type Poll as PollContract,
   type MessageProcessor,
-  type Verifier,
   type VerifyingKeysRegistry,
   MessageProcessor__factory as MessageProcessorFactory,
   Poll__factory as PollFactory,
@@ -45,7 +44,6 @@ describe("VoteTallyNonQv", () => {
   let pollContract: PollContract;
   let tallyContract: Tally;
   let messageProcessorContract: MessageProcessor;
-  let verifierContract: Verifier;
   let verifyingKeysRegistryContract: VerifyingKeysRegistry;
   let policyContract: IBasePolicy;
   let initialVoiceCreditProxyContract: ConstantInitialVoiceCreditProxy;
@@ -66,7 +64,6 @@ describe("VoteTallyNonQv", () => {
 
     const r = await deployTestContracts({ initialVoiceCreditBalance: 100, stateTreeDepth: STATE_TREE_DEPTH, signer });
     maciContract = r.maciContract;
-    verifierContract = r.mockVerifierContract as Verifier;
     verifyingKeysRegistryContract = r.verifyingKeysRegistryContract;
     policyContract = r.policyContract;
     initialVoiceCreditProxyContract = r.constantInitialVoiceCreditProxyContract;
@@ -79,8 +76,6 @@ describe("VoteTallyNonQv", () => {
       treeDepths,
       messageBatchSize,
       coordinatorPublicKey: coordinator.publicKey.asContractParam(),
-      verifier: verifierContract,
-      verifyingKeysRegistry: verifyingKeysRegistryContract,
       mode: EMode.NON_QV,
       policy: policyContract,
       initialVoiceCreditProxy: initialVoiceCreditProxyContract,

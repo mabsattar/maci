@@ -8,10 +8,8 @@ import {
   joinPoll,
   deployMaci,
   deployPoll,
-  deployVerifyingKeysRegistryContract,
   ContractStorage,
   deployFreeForAllSignUpPolicy,
-  deployVerifier,
   deployConstantInitialVoiceCreditProxy,
   deployConstantInitialVoiceCreditProxyFactory,
 } from "@maci-protocol/sdk";
@@ -136,22 +134,6 @@ export class TestingClass {
         voteTallyZkeyPath: this.voteTallyZkeyPath,
       });
 
-    const verifyingKeysRegistry = await deployVerifyingKeysRegistryContract({ signer });
-    await setVerifyingKeys({
-      verifyingKeysRegistryAddress: verifyingKeysRegistry,
-      stateTreeDepth: STATE_TREE_DEPTH,
-      tallyProcessingStateTreeDepth: TALLY_PROCESSING_STATE_TREE_DEPTH,
-      voteOptionTreeDepth: VOTE_OPTION_TREE_DEPTH,
-      messageBatchSize: MESSAGE_BATCH_SIZE,
-      pollStateTreeDepth: POLL_STATE_TREE_DEPTH,
-      pollJoiningVerifyingKey: pollJoiningVerifyingKey!,
-      pollJoinedVerifyingKey: pollJoinedVerifyingKey!,
-      processMessagesVerifyingKeys: [processVerifyingKey!],
-      tallyVotesVerifyingKeys: [tallyVerifyingKey!],
-      modes: [EMode.NON_QV],
-      signer,
-    });
-
     const [signupPolicy, , signupPolicyFactory, signupCheckerFactory] = await deployFreeForAllSignUpPolicy(
       {},
       signer,
@@ -175,6 +157,23 @@ export class TestingClass {
       signupPolicyAddress: signupPolicyContractAddress,
     });
 
+    // we set the verifying keys
+    const { verifyingKeysRegistryContractAddress } = maciAddresses;
+    await setVerifyingKeys({
+      verifyingKeysRegistryAddress: verifyingKeysRegistryContractAddress,
+      stateTreeDepth: STATE_TREE_DEPTH,
+      tallyProcessingStateTreeDepth: TALLY_PROCESSING_STATE_TREE_DEPTH,
+      voteOptionTreeDepth: VOTE_OPTION_TREE_DEPTH,
+      messageBatchSize: MESSAGE_BATCH_SIZE,
+      pollStateTreeDepth: POLL_STATE_TREE_DEPTH,
+      pollJoiningVerifyingKey: pollJoiningVerifyingKey!,
+      pollJoinedVerifyingKey: pollJoinedVerifyingKey!,
+      processMessagesVerifyingKeys: [processVerifyingKey!],
+      tallyVotesVerifyingKeys: [tallyVerifyingKey!],
+      modes: [EMode.NON_QV],
+      signer,
+    });
+
     const constantInitialVoiceCreditProxyFactory = await deployConstantInitialVoiceCreditProxyFactory(signer, true);
     const initialVoiceCreditProxy = await deployConstantInitialVoiceCreditProxy(
       { amount: DEFAULT_INITIAL_VOICE_CREDITS },
@@ -183,9 +182,6 @@ export class TestingClass {
     );
     const initialVoiceCreditProxyFactoryAddress = await constantInitialVoiceCreditProxyFactory.getAddress();
     const initialVoiceCreditProxyContractAddress = await initialVoiceCreditProxy.getAddress();
-
-    const verifier = await deployVerifier(signer, true);
-    const verifierContractAddress = await verifier.getAddress();
 
     const startDate = Math.floor(Date.now() / 1000) + 30;
 
@@ -200,13 +196,11 @@ export class TestingClass {
       mode: EMode.NON_QV,
       relayers: [await signer.getAddress()],
       signer,
-      verifierContractAddress,
       maciAddress: maciAddresses.maciContractAddress,
       policyContractAddress: pollPolicyContractAddress,
       initialVoiceCreditProxyFactoryAddress,
       initialVoiceCreditProxyContractAddress,
       voteOptions: DEFAULT_VOTE_OPTIONS,
-      verifyingKeysRegistryContractAddress: verifyingKeysRegistry,
     });
 
     await signup({

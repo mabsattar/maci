@@ -14,7 +14,6 @@ import {
   type Poll as PollContract,
   MessageProcessor__factory as MessageProcessorFactory,
   Poll__factory as PollFactory,
-  type Verifier,
   type VerifyingKeysRegistry,
   type IBasePolicy,
   type ConstantInitialVoiceCreditProxy,
@@ -35,7 +34,6 @@ import { timeTravel, deployTestContracts } from "./utils";
 describe("MessageProcessor", () => {
   // contracts
   let maciContract: MACI;
-  let verifierContract: Verifier;
   let verifyingKeysRegistryContract: VerifyingKeysRegistry;
   let messageProcessorContract: MessageProcessor;
   let pollContract: PollContract;
@@ -63,7 +61,6 @@ describe("MessageProcessor", () => {
     });
     maciContract = r.maciContract;
     signer = await getDefaultSigner();
-    verifierContract = r.mockVerifierContract as Verifier;
     verifyingKeysRegistryContract = r.verifyingKeysRegistryContract;
     signupPolicyContract = r.policyContract;
     initialVoiceCreditProxyContract = r.constantInitialVoiceCreditProxyContract;
@@ -75,8 +72,6 @@ describe("MessageProcessor", () => {
       treeDepths,
       messageBatchSize,
       coordinatorPublicKey: coordinator.publicKey.asContractParam(),
-      verifier: verifierContract,
-      verifyingKeysRegistry: verifyingKeysRegistryContract,
       mode: EMode.QV,
       policy: signupPolicyContract,
       initialVoiceCreditProxy: initialVoiceCreditProxyContract,

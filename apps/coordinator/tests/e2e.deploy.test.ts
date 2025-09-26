@@ -265,7 +265,7 @@ describe("E2E Deployment Tests", () => {
   });
 
   test("should merge correctly", async () => {
-    await sleepUntil((testPollDeploymentConfig.endDate + 5) * 1000); // 5 seconds of grace time after the poll end date
+    await sleepUntil((testPollDeploymentConfig.endDate + 13) * 1000); // 13 seconds of grace time after the poll end date
 
     const response = await fetch(`${TEST_URL}/proof/merge`, {
       method: "POST",

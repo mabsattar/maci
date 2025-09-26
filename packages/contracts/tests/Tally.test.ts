@@ -26,7 +26,6 @@ import {
   type MACI,
   type Poll as PollContract,
   type MessageProcessor,
-  type Verifier,
   type VerifyingKeysRegistry,
   MessageProcessor__factory as MessageProcessorFactory,
   Poll__factory as PollFactory,
@@ -57,7 +56,6 @@ describe("VoteTally", function test() {
   let pollContract: PollContract;
   let tallyContract: Tally;
   let messageProcessorContract: MessageProcessor;
-  let verifierContract: Verifier;
   let verifyingKeysRegistryContract: VerifyingKeysRegistry;
   let signupPolicyContract: IBasePolicy;
   let initialVoiceCreditProxyContract: ConstantInitialVoiceCreditProxy;
@@ -83,7 +81,6 @@ describe("VoteTally", function test() {
 
     const r = await deployTestContracts({ initialVoiceCreditBalance: 100, stateTreeDepth: STATE_TREE_DEPTH, signer });
     maciContract = r.maciContract;
-    verifierContract = r.mockVerifierContract as Verifier;
     verifyingKeysRegistryContract = r.verifyingKeysRegistryContract;
     signupPolicyContract = r.policyContract;
     initialVoiceCreditProxyContract = r.constantInitialVoiceCreditProxyContract;
@@ -97,8 +94,6 @@ describe("VoteTally", function test() {
         treeDepths,
         messageBatchSize,
         coordinatorPublicKey: coordinator.publicKey.asContractParam(),
-        verifier: verifierContract,
-        verifyingKeysRegistry: verifyingKeysRegistryContract,
         mode: EMode.QV,
         policy: signupPolicyContract,
         initialVoiceCreditProxy: initialVoiceCreditProxyContract,
@@ -233,7 +228,6 @@ describe("VoteTally", function test() {
 
       const r = await deployTestContracts({ initialVoiceCreditBalance: 100, stateTreeDepth: STATE_TREE_DEPTH, signer });
       maciContract = r.maciContract;
-      verifierContract = r.mockVerifierContract as Verifier;
       verifyingKeysRegistryContract = r.verifyingKeysRegistryContract;
       await r.policyContract.setTarget(await maciContract.getAddress()).then((tx) => tx.wait());
 
@@ -265,8 +259,6 @@ describe("VoteTally", function test() {
           },
           messageBatchSize,
           coordinatorPublicKey: coordinator.publicKey.asContractParam(),
-          verifier: verifierContract,
-          verifyingKeysRegistry: verifyingKeysRegistryContract,
           mode: EMode.QV,
           policy: pollPolicyContract,
           initialVoiceCreditProxy: initialVoiceCreditProxyContract,
@@ -556,7 +548,6 @@ describe("VoteTally", function test() {
 
       const r = await deployTestContracts({ initialVoiceCreditBalance: 100, stateTreeDepth: STATE_TREE_DEPTH, signer });
       maciContract = r.maciContract;
-      verifierContract = r.mockVerifierContract as Verifier;
       verifyingKeysRegistryContract = r.verifyingKeysRegistryContract;
 
       await r.policyContract.setTarget(await maciContract.getAddress()).then((tx) => tx.wait());
@@ -589,8 +580,6 @@ describe("VoteTally", function test() {
           },
           messageBatchSize,
           coordinatorPublicKey: coordinator.publicKey.asContractParam(),
-          verifier: verifierContract,
-          verifyingKeysRegistry: verifyingKeysRegistryContract,
           mode: EMode.QV,
           policy: pollPolicyContract,
           initialVoiceCreditProxy: initialVoiceCreditProxyContract,

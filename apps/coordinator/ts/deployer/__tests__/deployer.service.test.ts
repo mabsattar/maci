@@ -114,6 +114,8 @@ describe("DeployerService", () => {
         poseidonT5: zeroAddress,
         poseidonT6: zeroAddress,
       },
+      verifierContractAddress: zeroAddress,
+      verifyingKeysRegistryContractAddress: zeroAddress,
     });
 
     (getDeployedPolicyProxyFactories as jest.Mock).mockResolvedValue({ checker: undefined, policy: undefined });

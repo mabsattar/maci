@@ -6,7 +6,6 @@ import {
   setVerifyingKeys,
   signup,
   publishBatch,
-  deployVerifyingKeysRegistryContract,
   type IPublishMessage,
   type IPublishBatchArgs,
   type IPollContractsData,
@@ -15,7 +14,6 @@ import {
   deployMaci,
   deployFreeForAllSignUpPolicy,
   deployConstantInitialVoiceCreditProxy,
-  deployVerifier,
   Poll__factory as PollFactory,
   deployConstantInitialVoiceCreditProxyFactory,
 } from "@maci-protocol/sdk";
@@ -37,7 +35,6 @@ describe("publish", function test() {
 
   let maciAddresses: IMaciContracts;
   let initialVoiceCreditProxyContractAddress: string;
-  let verifierContractAddress: string;
   let pollAddresses: IPollContractsData;
   let signer: Signer;
 
@@ -86,14 +83,6 @@ describe("publish", function test() {
     );
     initialVoiceCreditProxyContractAddress = await initialVoiceCreditProxy.getAddress();
 
-    const verifier = await deployVerifier(signer, true);
-    verifierContractAddress = await verifier.getAddress();
-
-    // we deploy the verifying keys registry contract
-    const verifyingKeysRegistryAddress = await deployVerifyingKeysRegistryContract({ signer });
-    // we set the verifying keys
-    await setVerifyingKeys({ ...(await verifyingKeysArgs(signer)), verifyingKeysRegistryAddress });
-
     const startDate = await getBlockTimestamp(signer);
 
     // deploy the smart contracts
@@ -101,6 +90,13 @@ describe("publish", function test() {
       ...deployArgs,
       signer,
       signupPolicyAddress: signupPolicyContractAddress,
+    });
+
+    // we set the verifying keys
+    const { verifyingKeysRegistryContractAddress } = maciAddresses;
+    await setVerifyingKeys({
+      ...(await verifyingKeysArgs(signer)),
+      verifyingKeysRegistryAddress: verifyingKeysRegistryContractAddress,
     });
 
     // deploy a poll contract
@@ -111,8 +107,6 @@ describe("publish", function test() {
       pollEndTimestamp: startDate + pollDuration,
       relayers: [await signer.getAddress()],
       maciAddress: maciAddresses.maciContractAddress,
-      verifierContractAddress,
-      verifyingKeysRegistryContractAddress: verifyingKeysRegistryAddress,
       policyContractAddress: pollPolicyContractAddress,
       initialVoiceCreditProxyContractAddress,
     });

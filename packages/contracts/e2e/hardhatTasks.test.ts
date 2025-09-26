@@ -135,12 +135,12 @@ describe("E2E hardhat tasks", function test() {
     await hardhat.run(EDeploySteps.TallyFactory, args);
   });
 
-  it("should deploy maci contract properly", async () => {
-    await hardhat.run(EDeploySteps.Maci, args);
-  });
-
   it("should deploy verifying keys registry contract properly", async () => {
     await hardhat.run(EDeploySteps.VerifyingKeysRegistry, args);
+  });
+
+  it("should deploy maci contract properly", async () => {
+    await hardhat.run(EDeploySteps.Maci, args);
   });
 
   it("should deploy voice credit proxy factory contract properly", async () => {
