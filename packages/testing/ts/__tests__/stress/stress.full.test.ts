@@ -163,7 +163,7 @@ Object.entries(filePerMode).forEach((data) => {
       // we set the verifying keys
       const { verifyingKeysRegistryContractAddress } = maciContractsAddresses;
       await setVerifyingKeys({
-        ...(await verifyingKeysArgs(signer, [EMode.FULL])),
+        ...(await verifyingKeysArgs(signer, [mode])),
         verifyingKeysRegistryAddress: verifyingKeysRegistryContractAddress,
       });
 
