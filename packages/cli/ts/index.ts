@@ -1088,7 +1088,7 @@ program
           maciAddress: maciContractAddress,
           coordinatorPrivateKey,
           pollId: Number(pollId),
-	  incremental,
+          incremental,
           ipfsMessageBackupFiles,
           stateFile: stateFile || "",
           transactionHash: transactionHash || "",
