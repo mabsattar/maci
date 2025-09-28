@@ -111,6 +111,7 @@ export const generateProofs = async ({
 	// check for existing proof files to prevent accidental regenration
 	const existingProofs: string[] = [];
 
+
 	if (isOutputDirExists) {
 		try {
 			const files = await fs.promises.readdir(outputDir);
@@ -118,7 +119,7 @@ export const generateProofs = async ({
 				file.endsWith('.json') ||
 				file.endsWith('.zkproof') ||
 				file.includes('processMessages') ||
-				file.includes('tallyVotesn')
+				file.includes('tallyVotes')
 			);
 			existingProofs.push(...proofFiles);
 		} catch (error) {
