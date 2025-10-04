@@ -1,4 +1,4 @@
-import { type TAbi } from "@maci-protocol/contracts";
+import { type Verifier, type TAbi } from "@maci-protocol/contracts";
 import { type EMode } from "@maci-protocol/core";
 import { type PublicKey } from "@maci-protocol/domainobjs";
 
@@ -47,16 +47,6 @@ export interface IDeployPollArgs {
    * The coordinator public key
    */
   coordinatorPublicKey: PublicKey;
-
-  /**
-   * The address of the verifier contract
-   */
-  verifierContractAddress: string;
-
-  /**
-   * The address of the verifying keys registry contract
-   */
-  verifyingKeysRegistryContractAddress: string;
 
   /**
    * The mode of the poll
@@ -187,6 +177,11 @@ export interface IDeployMaciArgs {
     poseidonT5: string;
     poseidonT6: string;
   }>;
+
+  /**
+   * Verifier address if is already deployed
+   */
+  verifier?: Verifier;
 }
 
 /**
@@ -222,6 +217,16 @@ export interface IMaciContracts {
     poseidonT5: string;
     poseidonT6: string;
   };
+
+  /**
+   * The address of the Verifier contract
+   */
+  verifierContractAddress: string;
+
+  /**
+   * The address of the VerifyingKeysRegistry contract
+   */
+  verifyingKeysRegistryContractAddress: string;
 }
 
 /**

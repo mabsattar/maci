@@ -7,7 +7,6 @@ import {
   signup,
   deployMaci,
   deployFreeForAllSignUpPolicy,
-  deployVerifyingKeysRegistryContract,
 } from "@maci-protocol/sdk";
 import { expect } from "chai";
 import { type Signer } from "ethers";
@@ -27,16 +26,18 @@ describe("signup", function test() {
     const [signupPolicy] = await deployFreeForAllSignUpPolicy({}, signer, true);
     const signupPolicyContractAddress = await signupPolicy.getAddress();
 
-    // we deploy the verifying keys registry contract
-    const verifyingKeysRegistryAddress = await deployVerifyingKeysRegistryContract({ signer });
-    // we set the verifying keys
-    await setVerifyingKeys({ ...(await verifyingKeysArgs(signer)), verifyingKeysRegistryAddress });
-
     // deploy the smart contracts
     maciAddresses = await deployMaci({
       ...deployArgs,
       signer,
       signupPolicyAddress: signupPolicyContractAddress,
+    });
+
+    // we set the verifying keys
+    const { verifyingKeysRegistryContractAddress } = maciAddresses;
+    await setVerifyingKeys({
+      ...(await verifyingKeysArgs(signer)),
+      verifyingKeysRegistryAddress: verifyingKeysRegistryContractAddress,
     });
   });
 

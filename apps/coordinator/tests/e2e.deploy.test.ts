@@ -40,7 +40,7 @@ dotenv.config();
 
 jest.setTimeout(700000); // Sets timeout to 700 seconds
 
-const PORT = process.env.COORDINATOR_PORT || 3000;
+const PORT = process.env.COORDINATOR_PORT || 3001;
 const TEST_URL = `http://localhost:${PORT}/v1`;
 const CHAIN = ESupportedChains.Localhost;
 
@@ -241,7 +241,7 @@ describe("E2E Deployment Tests", () => {
         startBlock: Number(maciCreatedAt),
         network: ESupportedChains.OptimismSepolia,
         name: process.env.SUBGRAPH_NAME,
-        tag: `v0.0.${maciCreatedAt}`, // different versions per test using block number
+        tag: `v0.0.${+new Date()}`, // different versions per test using timestamp
       }),
     });
 
@@ -265,7 +265,7 @@ describe("E2E Deployment Tests", () => {
   });
 
   test("should merge correctly", async () => {
-    await sleepUntil((testPollDeploymentConfig.endDate + 5) * 1000); // 5 seconds of grace time after the poll end date
+    await sleepUntil((testPollDeploymentConfig.endDate + 13) * 1000); // 13 seconds of grace time after the poll end date
 
     const response = await fetch(`${TEST_URL}/proof/merge`, {
       method: "POST",

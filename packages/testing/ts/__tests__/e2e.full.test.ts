@@ -14,13 +14,11 @@ import {
   publish,
   deployPoll,
   generateProofs,
-  deployVerifyingKeysRegistryContract,
   timeTravel,
   isArm,
   deployMaci,
   deployFreeForAllSignUpPolicy,
   deployConstantInitialVoiceCreditProxy,
-  deployVerifier,
   type IGenerateProofsArgs,
   type IMaciContracts,
   joinPoll,
@@ -76,9 +74,7 @@ describe("e2e tests with full credits voting", function test() {
 
   let maciAddresses: IMaciContracts;
   let initialVoiceCreditProxyContractAddress: string;
-  let verifierContractAddress: string;
   let signer: Signer;
-  let verifyingKeysRegistryAddress: string;
 
   const generateProofsArgs: Omit<IGenerateProofsArgs, "maciAddress" | "signer"> = {
     outputDir: testProofsDirPath,
@@ -120,6 +116,13 @@ describe("e2e tests with full credits voting", function test() {
       signupPolicyAddress: signupPolicyContractAddress,
     });
 
+    // we set the verifying keys
+    const { verifyingKeysRegistryContractAddress } = maciContractsAddresses;
+    await setVerifyingKeys({
+      ...(await verifyingKeysArgs(signer, [EMode.FULL])),
+      verifyingKeysRegistryAddress: verifyingKeysRegistryContractAddress,
+    });
+
     const startDate = await getBlockTimestamp(signer);
 
     // deploy a poll contract
@@ -130,8 +133,6 @@ describe("e2e tests with full credits voting", function test() {
       pollEndTimestamp: startDate + pollDuration,
       relayers: [await signer.getAddress()],
       maciAddress: maciContractsAddresses.maciContractAddress,
-      verifierContractAddress,
-      verifyingKeysRegistryContractAddress: verifyingKeysRegistryAddress,
       policyContractAddress: pollPolicyContractAddress,
       initialVoiceCreditProxyContractAddress,
       mode: EMode.FULL,
@@ -144,9 +145,6 @@ describe("e2e tests with full credits voting", function test() {
   before(async () => {
     signer = await getDefaultSigner();
 
-    // we deploy the verifying keys registry contract
-    verifyingKeysRegistryAddress = await deployVerifyingKeysRegistryContract({ signer });
-
     const constantInitialVoiceCreditProxyFactory = await deployConstantInitialVoiceCreditProxyFactory(signer, true);
     const initialVoiceCreditProxy = await deployConstantInitialVoiceCreditProxy(
       { amount: DEFAULT_INITIAL_VOICE_CREDITS },
@@ -154,14 +152,6 @@ describe("e2e tests with full credits voting", function test() {
       signer,
     );
     initialVoiceCreditProxyContractAddress = await initialVoiceCreditProxy.getAddress();
-
-    const verifier = await deployVerifier(signer, true);
-    verifierContractAddress = await verifier.getAddress();
-
-    // we deploy the verifying keys registry contract
-    verifyingKeysRegistryAddress = await deployVerifyingKeysRegistryContract({ signer });
-    // we set the verifying keys
-    await setVerifyingKeys({ ...(await verifyingKeysArgs(signer, [EMode.FULL])), verifyingKeysRegistryAddress });
   });
 
   describe("1 signup, 1 message", () => {

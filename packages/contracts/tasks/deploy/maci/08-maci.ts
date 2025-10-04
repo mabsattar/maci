@@ -55,6 +55,19 @@ deployment.deployTask(EDeploySteps.Maci, "Deploy MACI contract").then((task) =>
       hre.network.name,
     );
     const tallyFactoryContractAddress = storage.mustGetAddress(EContracts.TallyFactory, hre.network.name);
+    const verifierContractAddress = storage.mustGetAddress(EContracts.Verifier, hre.network.name);
+    const verifyingKeysRegistryContractAddress = storage.mustGetAddress(
+      EContracts.VerifyingKeysRegistry,
+      hre.network.name,
+    );
+
+    if (!verifierContractAddress) {
+      throw new Error("Need to deploy Verifier contract first");
+    }
+
+    if (!verifyingKeysRegistryContractAddress) {
+      throw new Error("Need to deploy VerifyingKeysRegistry contract first");
+    }
 
     const stateTreeDepth =
       deployment.getDeployConfigField<number | null>(EContracts.MACI, "stateTreeDepth") ?? DEFAULT_STATE_TREE_DEPTH;
@@ -63,12 +76,16 @@ deployment.deployTask(EDeploySteps.Maci, "Deploy MACI contract").then((task) =>
 
     const maciContract = await deployment.deployContractWithLinkedLibraries<MACI>(
       { contractFactory: maciContractFactory },
-      pollFactoryContractAddress,
-      messageProcessorFactoryContractAddress,
-      tallyFactoryContractAddress,
-      policyContractAddress,
-      stateTreeDepth,
-      emptyBallotRoots,
+      {
+        pollFactory: pollFactoryContractAddress,
+        messageProcessorFactory: messageProcessorFactoryContractAddress,
+        tallyFactory: tallyFactoryContractAddress,
+        signUpPolicy: policyContractAddress,
+        verifier: verifierContractAddress,
+        verifyingKeysRegistry: verifyingKeysRegistryContractAddress,
+        stateTreeDepth,
+        emptyBallotRoots,
+      },
     );
 
     const policyContract = await deployment.getContract<IBasePolicy>({
@@ -84,12 +101,16 @@ deployment.deployTask(EDeploySteps.Maci, "Deploy MACI contract").then((task) =>
       contract: maciContract,
       libraries,
       args: [
-        pollFactoryContractAddress,
-        messageProcessorFactoryContractAddress,
-        tallyFactoryContractAddress,
-        policyContractAddress,
-        stateTreeDepth,
-        emptyBallotRoots.map((root) => root.toString()),
+        {
+          pollFactory: pollFactoryContractAddress,
+          messageProcessorFactory: messageProcessorFactoryContractAddress,
+          tallyFactory: tallyFactoryContractAddress,
+          signUpPolicy: policyContractAddress,
+          verifier: verifierContractAddress,
+          verifyingKeysRegistry: verifyingKeysRegistryContractAddress,
+          stateTreeDepth,
+          emptyBallotRoots: emptyBallotRoots.map((root) => root.toString()),
+        },
       ],
       network: hre.network.name,
     });

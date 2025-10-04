@@ -12,13 +12,11 @@ import {
   publish,
   deployPoll,
   generateProofs,
-  deployVerifyingKeysRegistryContract,
   timeTravel,
   isArm,
   deployMaci,
   deployFreeForAllSignUpPolicy,
   deployConstantInitialVoiceCreditProxy,
-  deployVerifier,
   type IGenerateProofsArgs,
   type IMaciContracts,
   joinPoll,
@@ -120,9 +118,7 @@ Object.entries(filePerMode).forEach((data) => {
 
     let maciAddresses: IMaciContracts;
     let initialVoiceCreditProxyContractAddress: string;
-    let verifierContractAddress: string;
     let signer: Signer;
-    let verifyingKeysRegistryAddress: string;
 
     const generateProofsArgs: Omit<IGenerateProofsArgs, "maciAddress" | "signer"> = {
       outputDir: testProofsDirPath,
@@ -164,6 +160,13 @@ Object.entries(filePerMode).forEach((data) => {
         signupPolicyAddress: signupPolicyContractAddress,
       });
 
+      // we set the verifying keys
+      const { verifyingKeysRegistryContractAddress } = maciContractsAddresses;
+      await setVerifyingKeys({
+        ...(await verifyingKeysArgs(signer, [mode])),
+        verifyingKeysRegistryAddress: verifyingKeysRegistryContractAddress,
+      });
+
       const startDate = await getBlockTimestamp(signer);
 
       // deploy a poll contract
@@ -174,8 +177,6 @@ Object.entries(filePerMode).forEach((data) => {
         pollEndTimestamp: startDate + pollDuration,
         relayers: [await signer.getAddress()],
         maciAddress: maciContractsAddresses.maciContractAddress,
-        verifierContractAddress,
-        verifyingKeysRegistryContractAddress: verifyingKeysRegistryAddress,
         policyContractAddress: pollPolicyContractAddress,
         initialVoiceCreditProxyContractAddress,
         mode,
@@ -188,9 +189,6 @@ Object.entries(filePerMode).forEach((data) => {
     before(async () => {
       signer = await getDefaultSigner();
 
-      // we deploy the verifying keys registry contract
-      verifyingKeysRegistryAddress = await deployVerifyingKeysRegistryContract({ signer });
-
       const constantInitialVoiceCreditProxyFactory = await deployConstantInitialVoiceCreditProxyFactory(signer, true);
       const initialVoiceCreditProxy = await deployConstantInitialVoiceCreditProxy(
         { amount: DEFAULT_INITIAL_VOICE_CREDITS },
@@ -198,17 +196,6 @@ Object.entries(filePerMode).forEach((data) => {
         signer,
       );
       initialVoiceCreditProxyContractAddress = await initialVoiceCreditProxy.getAddress();
-
-      const verifier = await deployVerifier(signer, true);
-      verifierContractAddress = await verifier.getAddress();
-
-      // we deploy the verifying keys registry contract
-      verifyingKeysRegistryAddress = await deployVerifyingKeysRegistryContract({ signer });
-      // we set the verifying keys
-      await setVerifyingKeys({
-        ...(await verifyingKeysArgs(signer, [mode])),
-        verifyingKeysRegistryAddress,
-      });
     });
 
     describe(`${numberSignups} signup(s), ${numberSignups * numberMessagesPerUser} message(s)`, () => {

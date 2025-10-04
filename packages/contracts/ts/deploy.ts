@@ -155,7 +155,7 @@ export const deployContract = async <T extends BaseContract>(
   const deployment = Deployment.getInstance({ hre });
   deployment.setHre(hre);
 
-  return deployment.deployContract({ name: contractName as EContracts, signer }, ...args);
+  return await deployment.deployContract({ name: contractName as EContracts, signer }, ...args);
 };
 
 /**
@@ -889,6 +889,7 @@ export const deployPollFactory = async (
 /**
  * Deploy a MACI contract
  * @param {IDeployMaciArgs} args - deploy arguments
+ * @dev used in packages/contract tests (there is another deploy maci in tasks/runner and another in packages/sdk)
  * @returns {IDeployedMaci} the deployed MACI contract
  */
 export const deployMaci = async ({
@@ -898,6 +899,7 @@ export const deployMaci = async ({
   stateTreeDepth = 10,
   factories,
   quiet = true,
+  verifier,
 }: IDeployMaciArgs): Promise<IDeployedMaci> => {
   const emptyBallotRoots = generateEmptyBallotRoots(stateTreeDepth);
 
@@ -952,16 +954,20 @@ export const deployMaci = async ({
     tallyFactoryContract.getAddress(),
   ]);
 
-  const maciContract = await deployContractWithLinkedLibraries<MACI>(
-    maciContractFactory,
-    signer,
-    pollAddress,
-    messageProcessorAddress,
-    tallyAddress,
-    policyContractAddress,
+  const verifierContract = verifier || (await deployVerifier(signer, quiet));
+
+  const verifyingKeysRegistryContract = await deployVerifyingKeysRegistry(signer, quiet);
+
+  const maciContract = await deployContractWithLinkedLibraries<MACI>(maciContractFactory, signer, {
+    pollFactory: pollAddress,
+    messageProcessorFactory: messageProcessorAddress,
+    tallyFactory: tallyAddress,
+    signUpPolicy: policyContractAddress,
+    verifier: verifierContract,
+    verifyingKeysRegistry: verifyingKeysRegistryContract,
     stateTreeDepth,
     emptyBallotRoots,
-  );
+  });
 
   return {
     maciContract,
@@ -969,5 +975,7 @@ export const deployMaci = async ({
     messageProcessorFactoryContract,
     tallyFactoryContract,
     poseidonAddrs,
+    verifierContract,
+    verifyingKeysRegistryContract,
   };
 };

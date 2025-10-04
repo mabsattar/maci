@@ -11,8 +11,8 @@ import {
   deployFreeForAllSignUpPolicy,
   deployMaci,
   deployMockVerifier,
-  deployVerifyingKeysRegistry,
 } from "../ts/deploy";
+import { type Verifier } from "../typechain-types";
 
 export const insertSubTreeGasLimit = { gasLimit: 300000 };
 export const enqueueGasLimit = { gasLimit: 500000 };
@@ -90,16 +90,15 @@ export const deployTestContracts = async ({
     signer,
   );
 
-  // VerifyingKeysRegistry
-  const verifyingKeysRegistryContract = await deployVerifyingKeysRegistry(signer, true);
-  const [policyContractAddress] = await Promise.all([policyContract.getAddress()]);
+  const policyContractAddress = await policyContract.getAddress();
 
-  const { maciContract } = await deployMaci({
+  const { maciContract, verifyingKeysRegistryContract } = await deployMaci({
     policyContractAddress,
     signer,
     stateTreeDepth,
     factories,
     quiet,
+    verifier: mockVerifierContract as unknown as Verifier,
   });
 
   return {

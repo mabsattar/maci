@@ -38,7 +38,6 @@ import {
   getPolicyTrait,
   getPolicyContractNamesByTrait,
   type ITallyData,
-  deployVerifier,
   deployMaci,
   deployFreeForAllSignUpPolicy,
   generateEmptyBallotRoots,
@@ -130,11 +129,6 @@ program
         signupPolicyContractAddress = await contract.getAddress();
       }
 
-      // deploy a verifier contract
-      const verifierContract = await deployVerifier(signer, true);
-
-      const verifierContractAddress = await verifierContract.getAddress();
-
       // deploy MACI, PollFactory and poseidon
       const {
         maciContractAddress,
@@ -142,6 +136,8 @@ program
         tallyFactoryContractAddress,
         messageProcessorFactoryContractAddress,
         poseidonAddresses,
+        verifierContractAddress,
+        verifyingKeysRegistryContractAddress,
       } = await deployMaci({
         signupPolicyAddress: signupPolicyContractAddress,
         poseidonAddresses: {
@@ -161,6 +157,7 @@ program
         data: {
           [args.signupPolicyContractName]: { address: signupPolicyContractAddress, args: [] },
           [EContracts.Verifier]: { address: verifierContractAddress, args: [] },
+          [EContracts.VerifyingKeysRegistry]: { address: verifyingKeysRegistryContractAddress, args: [] },
           [EContracts.MACI]: {
             address: maciContractAddress,
             args: [
@@ -362,23 +359,18 @@ program
       const signer = await getSigner();
       const network = await signer.provider?.getNetwork();
 
-      const [
-        verifyingKeysRegistryAddress,
-        maciAddress,
-        initialVoiceCreditProxyAddress,
-        initialVoiceCreditProxyFactoryAddress,
-        verifierContractAddress,
-      ] = readContractAddresses({
-        contractNames: [
-          EContracts.VerifyingKeysRegistry,
-          EContracts.MACI,
-          EContracts.ConstantInitialVoiceCreditProxy,
-          EContracts.ConstantInitialVoiceCreditProxyFactory,
-          EContracts.Verifier,
-        ],
-        network: network?.name,
-        defaultAddresses: [args.verifyingKeysRegistryAddress, args.maciAddress, args.initialVoiceCreditsProxy],
-      });
+      const [maciAddress, initialVoiceCreditProxyAddress, initialVoiceCreditProxyFactoryAddress] =
+        readContractAddresses({
+          contractNames: [
+            EContracts.VerifyingKeysRegistry,
+            EContracts.MACI,
+            EContracts.ConstantInitialVoiceCreditProxy,
+            EContracts.ConstantInitialVoiceCreditProxyFactory,
+            EContracts.Verifier,
+          ],
+          network: network?.name,
+          defaultAddresses: [args.verifyingKeysRegistryAddress, args.maciAddress, args.initialVoiceCreditsProxy],
+        });
 
       const maciContract = MACIFactory.connect(maciAddress, signer);
 
@@ -411,12 +403,10 @@ program
         voteOptionTreeDepth: args.voteOptionTreeDepth,
         coordinatorPublicKey: PublicKey.deserialize(args.publicKey),
         maciAddress,
-        verifyingKeysRegistryContractAddress: verifyingKeysRegistryAddress,
         relayers: args.relayers ?? [ZeroAddress],
         mode: args.mode,
         signer,
         voteOptions: args.voteOptions ?? DEFAULT_VOTE_OPTIONS,
-        verifierContractAddress,
         policyContractAddress: signupPolicyContractAddress,
         initialVoiceCreditProxyFactoryAddress,
         initialVoiceCreditProxyContractAddress: initialVoiceCreditProxyAddress,

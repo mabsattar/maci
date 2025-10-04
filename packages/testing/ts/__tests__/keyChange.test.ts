@@ -14,7 +14,6 @@ import {
   publish,
   generateProofs,
   deployPoll,
-  deployVerifyingKeysRegistryContract,
   timeTravel,
   type IGenerateProofsArgs,
   type ITallyData,
@@ -23,7 +22,6 @@ import {
   type IMaciContracts,
   deployFreeForAllSignUpPolicy,
   deployConstantInitialVoiceCreditProxy,
-  deployVerifier,
   deployConstantInitialVoiceCreditProxyFactory,
 } from "@maci-protocol/sdk";
 import { expect } from "chai";
@@ -69,9 +67,7 @@ describe("keyChange tests", function test() {
 
   let maciAddresses: IMaciContracts;
   let initialVoiceCreditProxyContractAddress: string;
-  let verifierContractAddress: string;
   let signer: Signer;
-  let verifyingKeysRegistryAddress: string;
 
   const generateProofsArgs: Omit<IGenerateProofsArgs, "maciAddress" | "signer"> = {
     outputDir: testProofsDirPath,
@@ -95,9 +91,6 @@ describe("keyChange tests", function test() {
   before(async () => {
     signer = await getDefaultSigner();
 
-    // we deploy the verifying keys registry contract
-    verifyingKeysRegistryAddress = await deployVerifyingKeysRegistryContract({ signer });
-
     const constantInitialVoiceCreditProxyFactory = await deployConstantInitialVoiceCreditProxyFactory(signer, true);
     const initialVoiceCreditProxy = await deployConstantInitialVoiceCreditProxy(
       { amount: DEFAULT_INITIAL_VOICE_CREDITS },
@@ -105,12 +98,6 @@ describe("keyChange tests", function test() {
       signer,
     );
     initialVoiceCreditProxyContractAddress = await initialVoiceCreditProxy.getAddress();
-
-    const verifier = await deployVerifier(signer, true);
-    verifierContractAddress = await verifier.getAddress();
-
-    // we set the verifying keys
-    await setVerifyingKeys({ ...(await verifyingKeysArgs(signer)), verifyingKeysRegistryAddress });
   });
 
   describe("keyChange and new vote (new vote has same nonce)", () => {
@@ -155,6 +142,13 @@ describe("keyChange tests", function test() {
         signupPolicyAddress: signupPolicyContractAddress,
       });
 
+      // we set the verifying keys
+      const { verifyingKeysRegistryContractAddress } = maciAddresses;
+      await setVerifyingKeys({
+        ...(await verifyingKeysArgs(signer)),
+        verifyingKeysRegistryAddress: verifyingKeysRegistryContractAddress,
+      });
+
       const startDate = await getBlockTimestamp(signer);
 
       // deploy a poll contract
@@ -165,8 +159,6 @@ describe("keyChange tests", function test() {
         pollEndTimestamp: startDate + pollDuration,
         relayers: [await signer.getAddress()],
         maciAddress: maciAddresses.maciContractAddress,
-        verifierContractAddress,
-        verifyingKeysRegistryContractAddress: verifyingKeysRegistryAddress,
         policyContractAddress: pollPolicyContractAddress,
         initialVoiceCreditProxyContractAddress,
       });
@@ -318,6 +310,13 @@ describe("keyChange tests", function test() {
         signupPolicyAddress: signupPolicyContractAddress,
       });
 
+      // we set the verifying keys
+      const { verifyingKeysRegistryContractAddress } = maciAddresses;
+      await setVerifyingKeys({
+        ...(await verifyingKeysArgs(signer)),
+        verifyingKeysRegistryAddress: verifyingKeysRegistryContractAddress,
+      });
+
       const startDate = await getBlockTimestamp(signer);
 
       // deploy a poll contract
@@ -328,8 +327,6 @@ describe("keyChange tests", function test() {
         pollEndTimestamp: startDate + pollDuration,
         relayers: [await signer.getAddress()],
         maciAddress: maciAddresses.maciContractAddress,
-        verifierContractAddress,
-        verifyingKeysRegistryContractAddress: verifyingKeysRegistryAddress,
         policyContractAddress: pollPolicyContractAddress,
         initialVoiceCreditProxyContractAddress,
       });
@@ -467,6 +464,13 @@ describe("keyChange tests", function test() {
         signupPolicyAddress: signupPolicyContractAddress,
       });
 
+      // we set the verifying keys
+      const { verifyingKeysRegistryContractAddress } = maciAddresses;
+      await setVerifyingKeys({
+        ...(await verifyingKeysArgs(signer)),
+        verifyingKeysRegistryAddress: verifyingKeysRegistryContractAddress,
+      });
+
       const startDate = await getBlockTimestamp(signer);
 
       // deploy a poll contract
@@ -477,8 +481,6 @@ describe("keyChange tests", function test() {
         pollEndTimestamp: startDate + pollDuration,
         relayers: [await signer.getAddress()],
         maciAddress: maciAddresses.maciContractAddress,
-        verifierContractAddress,
-        verifyingKeysRegistryContractAddress: verifyingKeysRegistryAddress,
         policyContractAddress: pollPolicyContractAddress,
         initialVoiceCreditProxyContractAddress,
       });

@@ -13,6 +13,7 @@ import type {
   PoseidonT6,
   VerifyingKeysRegistry,
   IBasePolicy,
+  Verifier,
 } from "../typechain-types";
 import type { TypedContractMethod } from "../typechain-types/common";
 import type { EMode, TCircuitInputs } from "@maci-protocol/core";
@@ -174,6 +175,11 @@ export interface IDeployMaciArgs {
    * Whether to suppress console output
    */
   quiet?: boolean;
+
+  /**
+   * Verifier address if is already deployed
+   */
+  verifier?: Verifier;
 }
 
 /**
@@ -190,6 +196,8 @@ export interface IDeployedMaci {
     poseidonT5: string;
     poseidonT6: string;
   };
+  verifierContract: Verifier | MockVerifier;
+  verifyingKeysRegistryContract: VerifyingKeysRegistry;
 }
 
 /**
