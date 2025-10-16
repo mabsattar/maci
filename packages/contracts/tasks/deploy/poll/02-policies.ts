@@ -112,7 +112,7 @@ deployment.deployTask(EDeploySteps.PollPolicy, "Deploy Poll policies").then((tas
       erc20PolicyContractAddress,
     ].some(Boolean);
 
-    const isSkipable = [
+    const isSkippable = [
       skipDeployFreeForAllPolicy,
       skipDeployEASPolicy,
       skipDeployGitcoinPolicy,
@@ -124,7 +124,7 @@ deployment.deployTask(EDeploySteps.PollPolicy, "Deploy Poll policies").then((tas
       skipDeployERC20Policy,
     ].some((skip) => !skip);
 
-    const canSkipDeploy = incremental && hasPolicyAddress && isSkipable;
+    const canSkipDeploy = incremental && hasPolicyAddress && isSkippable;
 
     if (canSkipDeploy) {
       // eslint-disable-next-line no-console
