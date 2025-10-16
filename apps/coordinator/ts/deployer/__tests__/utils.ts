@@ -127,7 +127,7 @@ export const SemaphorePolicyDeploymentConfig: ISemaphoreCheckerArgs = {
  */
 export const HatsPolicyDeploymentConfig: IHatsCheckerArgs = {
   hatsProtocolAddress: "0x3bc1A0Ad72417f2d411118085256fC53CBdDd137",
-  critrionHats: ["26960358043289970096177553829315270011263390106506980876069447401472"],
+  criterionHats: ["26960358043289970096177553829315270011263390106506980876069447401472"],
 };
 
 /**
