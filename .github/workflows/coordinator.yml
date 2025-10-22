@@ -24,7 +24,7 @@ env:
   SUBGRAPH_DEPLOY_KEY: "subgraph-deploy-key"
   SUBGRAPH_FOLDER: "./node_modules/@maci-protocol/subgraph"
   ZERODEV_BUNDLER_RPC_OP_SEPOLIA: "https://rpc.zerodev.app/api/v3"
-  MNEMONIC: ${{ secrets.COORDINATOR_TEST_MNEMONIC }}
+  MNEMONIC: "test test test test test test test test test test test junk"
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.head_ref || github.run_id }}
