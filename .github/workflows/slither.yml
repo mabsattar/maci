@@ -19,7 +19,7 @@ jobs:
           version: 9
 
       - name: Use Node.js 20
-        uses: actions/setup-node@v5
+        uses: actions/setup-node@v6
         with:
           node-version: 20
           cache: "pnpm"
@@ -44,6 +44,6 @@ jobs:
           target: "packages/contracts/"
 
       - name: Upload SARIF file
-        uses: github/codeql-action/upload-sarif@v3
+        uses: github/codeql-action/upload-sarif@v4
         with:
           sarif_file: ${{ steps.slither.outputs.sarif }}

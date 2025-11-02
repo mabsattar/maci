@@ -230,7 +230,7 @@ export class DeployerService {
         [policyContract, checkerContract, policyFactory, checkFactory] = await deployHatsSignupPolicy(
           {
             hats: (args as IHatsCheckerArgs).hatsProtocolAddress,
-            criterionHats: (args as IHatsCheckerArgs).critrionHats.map((c) => BigInt(c)),
+            criterionHats: (args as IHatsCheckerArgs).criterionHats.map((c) => BigInt(c)),
           },
           factories,
           signer,

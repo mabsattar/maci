@@ -127,7 +127,7 @@ export interface IHatsCheckerArgs {
   /**
    * The criterion hats
    */
-  critrionHats: string[];
+  criterionHats: string[];
 }
 
 /**

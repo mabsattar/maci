@@ -47,7 +47,7 @@
     "@nestjs/websockets": "^11.1.6",
     "@nomicfoundation/hardhat-ethers": "^3.1.0",
     "@nomicfoundation/hardhat-toolbox": "^6.1.0",
-    "@redis/client": "^5.8.2",
+    "@redis/client": "^5.8.3",
     "@zerodev/ecdsa-validator": "5.4.9",
     "@zerodev/permissions": "5.5.14",
     "@zerodev/sdk": "5.4.41",
@@ -63,7 +63,7 @@
     "reflect-metadata": "^0.2.0",
     "rxjs": "^7.8.2",
     "socket.io": "^4.7.5",
-    "tar": "^7.4.1",
+    "tar": "^7.5.1",
     "ts-node": "^10.9.1",
     "viem": "^2.33.2"
   },

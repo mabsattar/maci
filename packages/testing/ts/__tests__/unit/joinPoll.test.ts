@@ -132,7 +132,7 @@ describe("joinPoll", function test() {
       pollId: 0n,
       pollJoiningZkey: testPollJoiningZkeyPath,
       useWasm,
-      pollWasm: testPollJoiningWasmPath,
+      pollJoiningWasm: testPollJoiningWasmPath,
       pollWitnessGenerator: testPollJoiningWitnessPath,
       rapidsnark: testRapidsnarkPath,
       sgDataArg: DEFAULT_SG_DATA,
@@ -169,7 +169,7 @@ describe("joinPoll", function test() {
       pollId: 0n,
       inclusionProof,
       pollJoiningZkey: testPollJoiningZkeyPath,
-      pollWasm: testPollJoiningWasmPath,
+      pollJoiningWasm: testPollJoiningWasmPath,
       sgDataArg: DEFAULT_SG_DATA,
       ivcpDataArg: DEFAULT_IVCP_DATA,
     });
