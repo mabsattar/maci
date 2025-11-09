@@ -108,9 +108,21 @@ task("submitOnChain", "Command to prove the result of a poll on-chain")
 
     await prover.proveTally(data.tallyProofs);
 
-    const voteOptions = await pollContract.voteOptions();
+    const [voteOptions, messageBatchSize] = await Promise.all([
+      pollContract.voteOptions().then((number) => Number.parseInt(number.toString(), 10)),
+      pollContract.messageBatchSize().then((number) => Number.parseInt(number.toString(), 10)),
+    ]);
 
-    await prover.submitResults(tallyData, Number.parseInt(voteOptions.toString(), 10));
+    const totalTallyBatches = Math.ceil(voteOptions / messageBatchSize);
+
+    for (let index = 0; index < totalTallyBatches; index += 1) {
+      const start = messageBatchSize * index;
+      const end = Math.min(messageBatchSize * (index + 1), voteOptions);
+
+      if (start < end) {
+        await prover.submitResults(tallyData, { start, end });
+      }
+    }
 
     const endBalance = await signer.provider!.getBalance(signer);
 
