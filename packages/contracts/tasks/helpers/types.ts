@@ -880,3 +880,26 @@ export interface IDeployContractWithLinkedLibrariesParams {
    */
   signer?: Signer;
 }
+
+/**
+ * Interface for storing proof generation salts
+ */
+export interface ProofGenerationSalts {
+  newResultsRootSalt: string;
+  newSpentVoiceCreditSubtotalSalt: string;
+  newPerVOSpentVoiceCreditsRootSalt: string;
+  tallyBatchNum?: number;
+  timestamp?: number;
+}
+
+/**
+ * Interface for storing all salts for a poll
+ */
+export interface PollSaltsData {
+  pollId: string;
+  tallyProofSalts: ProofGenerationSalts[];
+  processProofSalts?: {
+    newSbCommitment: string;
+    numBatchesProcessed?: number;
+  }[];
+}
