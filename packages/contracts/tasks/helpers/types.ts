@@ -222,6 +222,10 @@ export interface IProofGeneratorParams {
    * Path to the rapidsnark binary
    */
   rapidsnark?: string;
+
+  incremental?: boolean;
+
+  pollId: string;
 }
 
 /**
@@ -887,7 +891,7 @@ export interface IDeployContractWithLinkedLibrariesParams {
 export interface ProofGenerationSalts {
   newResultsRootSalt: string;
   newSpentVoiceCreditSubtotalSalt: string;
-  newPerVOSpentVoiceCreditsRootSalt: string;
+  newPerVoteOptionSpentVoiceCreditsRootSalt: string;
   tallyBatchNum?: number;
   timestamp?: number;
 }
