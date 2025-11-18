@@ -172,6 +172,8 @@ export const generateProofs = async ({
     outputDir,
     tallyOutputFile: tallyFile,
     mode,
+    incremental: false,
+    pollId:foundPoll.pollId.toString(),
   });
 
   const processProofs = await proofGenerator.generateMpProofs();

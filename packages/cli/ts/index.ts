@@ -997,6 +997,7 @@ program
   .description("generate the proofs for a poll")
   .option("-k, --private-key <privateKey>", "your serialized MACI private key")
   .option("-x, --maci-address <maciAddress>", "the MACI contract address")
+  .option("-i, --incremental", "Resume proof generation using existing salts if available")
   .requiredOption("-o, --poll-id <pollId>", "the poll id", BigInt)
   .requiredOption(
     "-t, --tally-file <tallyFile>",
@@ -1058,6 +1059,7 @@ program
       messageProcessorWitnessDat,
       wasm,
       rapidsnark,
+      incremental,
     }) => {
       try {
         banner(quiet);
@@ -1096,6 +1098,7 @@ program
           messageProcessorWitnessDatFile: messageProcessorWitnessDat,
           useWasm: wasm,
           rapidsnark,
+	  incremental,
         });
       } catch (error) {
         program.error((error as Error).message, { exitCode: 1 });
