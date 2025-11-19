@@ -32,6 +32,11 @@ export interface IProveOnChainArgs {
    * The tally file with results, per vote option spent credits, spent voice credits total
    */
   tallyFile?: string;
+
+  /**
+   * Whether to use batch submission
+   */
+  useBatchSubmission?: boolean;
 }
 
 /**

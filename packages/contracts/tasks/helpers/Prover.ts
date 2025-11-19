@@ -10,7 +10,7 @@ import type { BigNumberish } from "ethers";
 import { info, logGreen, logMagenta, success } from "../../ts/logger";
 import { asHex, formatProofForVerifierContract } from "../../ts/utils";
 
-import { type IProverParams, type TallyData } from "./types";
+import { type ISubmitResultsParams, type IProverParams, type TallyData } from "./types";
 
 /**
  * Prover class is designed to prove message processing and tally proofs on-chain.
@@ -323,14 +323,12 @@ export class Prover {
    * @param tallyData - tally data
    * @param recipients - number of recipients
    */
-  async submitResults(tallyData: TallyData, recipients?: number): Promise<void> {
+  async submitResults(tallyData: TallyData, { start, end }: ISubmitResultsParams): Promise<void> {
     logMagenta({ text: info("Submitting results...") });
 
     const tallyResults = tallyData.results.tally.map((t) => BigInt(t));
-    const resultLength = recipients ?? tallyResults.length;
-
     // slice in case we are submitting partial results
-    const partialResults = tallyResults.slice(0, resultLength);
+    const partialResults = tallyResults.slice(start ?? 0, end ?? tallyResults.length);
 
     const [treeDepths] = await Promise.all([this.pollContract.treeDepths()]);
 

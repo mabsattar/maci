@@ -24,6 +24,7 @@ export const proveOnChain = async ({
   proofDir,
   maciAddress,
   tallyFile,
+  useBatchSubmission,
   signer,
 }: IProveOnChainArgs): Promise<ITallyData | undefined> => {
   const deployment = Deployment.getInstance();
@@ -100,9 +101,22 @@ export const proveOnChain = async ({
     const tallyData = await fs.promises
       .readFile(tallyFile, "utf8")
       .then((result) => JSON.parse(result) as unknown as ITallyData);
-    const voteOptions = await pollContract.voteOptions();
 
-    await prover.submitResults(tallyData, Number.parseInt(voteOptions.toString(), 10));
+    const [voteOptions, messageBatchSize] = await Promise.all([
+      pollContract.voteOptions().then((number) => Number.parseInt(number.toString(), 10)),
+      pollContract.messageBatchSize().then((number) => Number.parseInt(number.toString(), 10)),
+    ]);
+
+    const totalTallyBatches = useBatchSubmission ? Math.ceil(voteOptions / messageBatchSize) : 1;
+
+    for (let index = 0; index < totalTallyBatches; index += 1) {
+      const start = messageBatchSize * index;
+      const end = useBatchSubmission ? Math.min(messageBatchSize * (index + 1), voteOptions) : voteOptions;
+
+      if (start < end) {
+        await prover.submitResults(tallyData, { start, end });
+      }
+    }
 
     return tallyData;
   }

@@ -204,6 +204,7 @@ export class ProofGenerator {
 
     try {
       const inputs: TCircuitInputs[] = [];
+      const proofs: Proof[] = [];
 
       // while we have unprocessed messages, process them
       while (this.poll.hasUnprocessedMessages()) {
@@ -220,16 +221,20 @@ export class ProofGenerator {
 
       const messageProcessorZkey = await extractVerifyingKey(this.messageProcessor.zkey, false);
 
-      const proofs = await Promise.all(
-        inputs.map((circuitInputs, index) =>
-          this.generateProofs(circuitInputs, this.messageProcessor, `process_${index}.json`, messageProcessorZkey).then(
-            (data) => {
-              options?.onBatchComplete?.({ current: index, total: totalMessageBatches, proofs: data });
-              return data;
-            },
-          ),
-        ),
-      ).then((data) => data.reduce((acc, x) => acc.concat(x), []));
+      for (let index = 0; index < inputs.length; index += 1) {
+        // eslint-disable-next-line no-await-in-loop
+        const data = await this.generateProofs(
+          inputs[index],
+          this.messageProcessor,
+          `process_${index}.json`,
+          messageProcessorZkey,
+        ).then((result) => {
+          options?.onBatchComplete?.({ current: index, total: totalMessageBatches, proofs: result });
+          return result;
+        });
+
+        proofs.push(...data);
+      }
 
       logGreen({ text: success("Proof generation is finished") });
 
@@ -306,6 +311,7 @@ export class ProofGenerator {
 
       let tallyCircuitInputs: TCircuitInputs;
       const inputs: TCircuitInputs[] = [];
+      const proofs: Proof[] = [];
 
       let batchIndex = 0;
       while (this.poll.hasUntalliedBallots()) {
@@ -372,14 +378,20 @@ export class ProofGenerator {
 
       const tallyVerifyingKey = await extractVerifyingKey(this.tally.zkey, false);
 
-      const proofs = await Promise.all(
-        inputs.map((circuitInputs, index) =>
-          this.generateProofs(circuitInputs, this.tally, `tally_${index}.json`, tallyVerifyingKey).then((data) => {
-            options?.onBatchComplete?.({ current: index, total: totalTallyBatches, proofs: data });
-            return data;
-          }),
-        ),
-      ).then((data) => data.reduce((acc, x) => acc.concat(x), []));
+      for (let index = 0; index < inputs.length; index += 1) {
+        // eslint-disable-next-line no-await-in-loop
+        const data = await this.generateProofs(
+          inputs[index],
+          this.tally,
+          `tally_${index}.json`,
+          tallyVerifyingKey,
+        ).then((result) => {
+          options?.onBatchComplete?.({ current: index, total: totalTallyBatches, proofs: result });
+          return result;
+        });
+
+        proofs.push(...data);
+      }
 
       logGreen({ text: success("Proof generation is finished") });
 

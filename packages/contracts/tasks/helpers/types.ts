@@ -729,6 +729,9 @@ export interface IVerificationSubtaskArgs {
   force?: boolean;
 }
 
+/**
+ * Interface that represents tree merge params
+ */
 export interface ITreeMergeParams {
   /**
    * Ethers signer
@@ -842,7 +845,24 @@ export interface TallyData {
   };
 }
 
-// a type representing the ABI of a contract
+/**
+ * Interface that represents submit results params
+ */
+export interface ISubmitResultsParams {
+  /**
+   * Start index for submitting batch results
+   */
+  start?: number;
+
+  /**
+   * End index for submitting batch results
+   */
+  end?: number;
+}
+
+/**
+ * Type representing the ABI of a contract
+ */
 export type TAbi = string | readonly (string | Fragment | JsonFragment)[];
 
 /**
